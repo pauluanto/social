@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
 const { isEmail } = require('validator');
+const bcrypt = require('bcrypt');
+
+const saltRounds = 10;
+const myPlaintextPassword = 's0/\/\P4$$w0rD';
+const someOtherPlaintextPassword = 'not_bacon';
+
 
 const userSchema = new mongoose.Schema(
     {
@@ -47,6 +53,15 @@ const userSchema = new mongoose.Schema(
       timestamps: true,
     }
   );
+
+//play function before save inte display : 'block')
+
+userSchema.pre("save", async function(next){
+  const salt = await bcrypt.genSalt()
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
 
 const UserModel = mongoose.model("user", userSchema);
 module.exports = UserModel;
